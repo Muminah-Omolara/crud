@@ -1,5 +1,5 @@
 const express = require('express');
-const { createPost, editPost } = require('../controller/post.controller');
+const { createComment, editComment, getComment, deleteComment } = require('../controller/post.controller');
 const { authMiddleware } = require('../middlewares/auth.middleware');
 const router = express.Router();
 
