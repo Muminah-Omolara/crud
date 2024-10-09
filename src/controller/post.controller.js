@@ -54,3 +54,50 @@ exports.editPost = async (req, res) => {
     res.status(500).json({ error: 'Error updating post', success: false });
   }
 };
+
+
+
+exports.getPost = async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.status(200).json(post);
+  } catch (error) {
+    console.log('Error is: ', error);
+    res.status(500).json({ error: 'Error fetching post' });
+  }
+};
+
+
+exports.deletePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+  try {
+    const postExist = await prisma.post.findUnique({
+      where: {
+        id: postId,
+        authorId: userId,
+      },
+    });
+    if (!postExist) {
+      return res.status(404).json({ error: 'Post does not exist or author unauthorized' });
+    }
+
+    await prisma.post.delete({
+      where: {
+        id: postId,
+      },
+    });
+    res.status(200).json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    console.log('Error is: ', error);
+    res.status(500).json({ error: 'Error deleting post' });
+  }
+};
